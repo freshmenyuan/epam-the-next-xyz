@@ -20,7 +20,7 @@ body {
 /* Navigation style */
 
 .navbar-inverse {
-	background-image: linear-gradient(to bottom, #D9260F 0, #B81208 100%);
+	background-image: linear-gradient(to bottom, #D92C0F 0, #B8085F 100%);
 	border-color: #666666;
 }
 
@@ -41,6 +41,8 @@ body {
 .padding {
   padding-top: 12px;
 }
+
+
 
 .img {
   padding-top: 20px;
