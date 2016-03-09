@@ -58,19 +58,20 @@ img{
 
 .overlay-container {
   position: relative; /* <-- Set as the reference for the positioned overlay */
-
 }
 
 .overlay-container:hover {
-  height: 130px;
+  color:black;
 }
 
 .overlay-container .overlay {
   position: absolute; /* <-- Remove the overlay from normal flow         */
-  bottom: 0;          /* <-- Keep the overlay at the bottom of the box   */
+  top: 54%;           /* <-- Keep the overlay at the bottom of the box   */
   left: 0;            /* <-- Set left and right properties to 0          */
   right: 0;           /*     In order to expand the overlay horizontally */
-
+  color: black;
+  margin-left: 28px;
+  font-size: 18px;
   padding: 0.4rem;
   background-color: rgba(255, 255, 255, 0.3);
 }

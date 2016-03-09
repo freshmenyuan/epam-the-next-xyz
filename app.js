@@ -7,17 +7,24 @@ mongoose.connect('mongodb://localhost/epam');
 var Schema = mongoose.Schema;
 
 var ArticlesSchema = new Schema({
-  id : Number,
   title:String,
   url:String,
   img:String,
   uername:String,
-  date:Date
+  date:Date,
+  name:String,
+  email:String,
+  password:String
+});
+
+var User = new Schema({
+  name:String,
+  email:String,
+  password:String
 });
 
 mongoose.model('Article', ArticlesSchema);
-
-
+mongoose.model('User', User);
 
 // include express handlebars (templating engine)
 var exphbs  = require('express-handlebars');
@@ -28,8 +35,6 @@ var hbs = exphbs.create({defaultLayout: 'main'});
 // crethe the express app
 var app = express();
 
-var api = require('./routes/api');
-app.use('/api', api);
 // setup handlebars
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -40,6 +45,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // setup our public directory (which will serve any file stored in the 'public' directory)
 app.use(express.static('public'));
+
+var api = require('./routes/api');
+app.use('/api', api);
 
 app.use(function (req, res, next) {
  res.locals.scripts = [];
@@ -54,18 +62,20 @@ app.get('/', function (req, res) {
 
 app.get('/articles/:id', function(req, res, next) {
 
-  var fs = require('fs');
-  var obj;
-  fs.readFile('./data/articles.json', 'utf8', function (err, data) {
-    if (err) throw err;
+  // var fs = require('fs');
+  // var obj;
+  // fs.readFile('./data/articles.json', 'utf8', function (err, data) {
+  //   if (err) throw err;
 
-    data = _.filter(JSON.parse(data), function(item) {
-        return item.id == req.params.id;
-    });
+  //   data = _.filter(JSON.parse(data), function(item) {
+  //       return item.id == req.params.id;
+  //   });
 
-    res.render("article",{"name":data[0].title});
+    res.locals.scripts.push('/js/article.js');
+    res.render('article');
+    // res.render("article",{"name":data[0].title});
 
-  });
+ // });
 });
 
 // respond to the get request with the about page
@@ -75,6 +85,7 @@ app.get('/about', function(req, res) {
 
 // respond to the get request with the register page
 app.get('/register', function(req, res) {
+  res.locals.scripts.push('/js/register.js');
   res.render('register');
 });
 
@@ -96,6 +107,14 @@ app.get('/dashboard', function (req, res) {
 		}]
     });
 });
+
+app.post('/login',
+  passport.authenticate('local'),
+  function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    res.redirect('/users/' + req.user.username);
+  });
 
 // the api (note that typically you would likely organize things a little differently to this)
 
