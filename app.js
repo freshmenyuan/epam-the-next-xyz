@@ -72,6 +72,14 @@ app.use('/api', api);
 
 app.use(function (req, res, next) {
  res.locals.scripts = [];
+ if(req.user){
+  //res.locals.user = req.user;
+  req.session.user = req.user;
+ }
+ else{
+  res.locals.errMsg = req.message;
+ }
+
  next();
 });
 
@@ -121,12 +129,8 @@ app.post('/register', function(req, res) {
 
 // respond to the get request with dashboard page (and pass in some data into the template / note this will be rendered server-side)
 app.get('/dashboard', function (req, res) {
-    res.render('dashboard', {
-    	stuff: [{
-		    greeting: "Hello",
-		    subject: "World!"
-		}]
-    });
+  res.locals.scripts.push('/js/dashboard.js');
+  res.render('dashboard',{username:req.session.user.username});
 });
 
 app.get('/login', function(req, res) {
@@ -135,22 +139,20 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login',
-  passport.authenticate('local'),
+  passport.authenticate('local', { successRedirect: '/dashboard',
+                                   failureRedirect: '/login'}),
   function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    res.redirect('/dashboard/' + req.user.username);
+
+    req.session.user = req.user;
+    res.redirect('/dashboard');
   });
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-    console.log(password);
 
-    User.find({}, function (err, user) {
-      console.log(user);
-    });
-
-    User.findOne({"username":"adam"}, function (err, user) {
+    User.findOne({"username":username}, function (err, user) {
       console.log(user);
       if (err) { return done(err); }
       if (!user) {

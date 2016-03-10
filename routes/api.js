@@ -40,7 +40,16 @@ router.get('/articles/:id', function(req, res, next) {
 });
 
 router.post('/register', function(req, res, next){
-	console.log(req.body);
+
+       var user = new User(req.body);
+       user.save(function(err){
+         if(err) throw err;
+         else  res.send(req.body);
+     });
+});
+
+router.post('/addArticle', function(req, res, next){
+        console.log(req.body);
        var article = new Article(req.body);
        article.save(function(err){
          if(err) throw err;

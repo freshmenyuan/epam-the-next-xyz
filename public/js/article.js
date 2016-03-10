@@ -9,6 +9,7 @@ $.ajax({
     success: function(data) {
         var ele='<div class="col-md-3" id="article1"><div class="overlay-container"><img src='+ data.image +'><a href="/articles/1" class="overlay">'+data.name+'</a></div>';
         $("#row").append(ele);
+
     },
 
     error: function(error) {

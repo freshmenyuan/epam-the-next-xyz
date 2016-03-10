@@ -1,7 +1,12 @@
 <h2>Login</h2>
 <p></p>
 <form id='form' action="/login" method="POST">
-
+  {{#if user}}
+  <p>{{user.username}}</p>
+  {{/if}}
+  {{#if errMsg}}
+  <p>{{errMsg}}</p>
+  {{/if}}
   <div class="form-group">
     <label for="exampleInputEmail1">UserName</label>
     <input name="username" type="username" class="form-control" id="exampleInputName1" placeholder="Full Name">
