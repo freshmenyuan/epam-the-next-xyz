@@ -1,6 +1,7 @@
 body {
   padding-top: 70px;
   padding-bottom: 30px;
+  background-color: #EBF4F4;
 }
 
 .theme-dropdown .dropdown-menu {
@@ -20,7 +21,7 @@ body {
 /* Navigation style */
 
 .navbar-inverse {
-	background-image: linear-gradient(to bottom, #D92C0F 0, #B8085F 100%);
+	background-image: linear-gradient(to bottom, #711607 0, #B8085F 100%);
 	border-color: #666666;
 }
 
@@ -54,6 +55,10 @@ img{
   /*display: block;
   margin: auto auto;*/
   width: 100%
+}
+
+button{
+  /*background-color: #3E57C1;*/
 }
 
 .overlay-container {

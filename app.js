@@ -3,6 +3,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
 var mongoose = require('mongoose');
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var flash = require('express-flash');
+
 mongoose.connect('mongodb://localhost/epam');
 var Schema = mongoose.Schema;
 
@@ -17,15 +24,24 @@ var ArticlesSchema = new Schema({
   password:String
 });
 
-var User = new Schema({
-  name:String,
+var UsersSchema = new Schema({
+  username:String,
   email:String,
   password:String
 });
 
-mongoose.model('Article', ArticlesSchema);
-mongoose.model('User', User);
+UsersSchema.method("validPassword",function(password){
+  if(this.password==password){
+    return true;
+  }else{
+    return false;
+  }
 
+});
+
+mongoose.model('Article', ArticlesSchema);
+mongoose.model('User', UsersSchema);
+var User = mongoose.model("User");
 // include express handlebars (templating engine)
 var exphbs  = require('express-handlebars');
 
@@ -45,6 +61,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // setup our public directory (which will serve any file stored in the 'public' directory)
 app.use(express.static('public'));
+
+app.use(cookieParser());
+app.use(session({ secret: 'keyboard cat' }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 var api = require('./routes/api');
 app.use('/api', api);
@@ -108,13 +129,53 @@ app.get('/dashboard', function (req, res) {
     });
 });
 
+app.get('/login', function(req, res) {
+  // res.locals.scripts.push('/js/register.js');
+  res.render('login');
+});
+
 app.post('/login',
   passport.authenticate('local'),
   function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    res.redirect('/users/' + req.user.username);
+    res.redirect('/dashboard/' + req.user.username);
   });
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    console.log(password);
+
+    User.find({}, function (err, user) {
+      console.log(user);
+    });
+
+    User.findOne({"username":"adam"}, function (err, user) {
+      console.log(user);
+      if (err) { return done(err); }
+      if (!user) {
+
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+
 
 // the api (note that typically you would likely organize things a little differently to this)
 

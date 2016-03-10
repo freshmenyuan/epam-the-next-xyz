@@ -3,6 +3,7 @@ var router = express.Router();
 var _ = require('underscore');
 var mongoose = require('mongoose');
 var Article = mongoose.model('Article');
+var User = mongoose.model("User");
 // note that typically data would NOT be loaded from the filesystem in this manner :)
 
 router.get('/articles', function(req, res, next) {
